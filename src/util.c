@@ -252,8 +252,8 @@ void freedir(struct dir *dr) {
 
 
 char *getpath(struct dir *cur) {
-  static char *dat;
-  static int datl = 0;
+  static char *dat = NULL;
+  static int datl = 1024;
   struct dir *d, **list;
   int c, i;
 
@@ -266,12 +266,15 @@ char *getpath(struct dir *cur) {
     c++;
   }
 
-  if(datl == 0) {
-    datl = i;
-    dat = malloc(i);
-  } else if(datl < i) {
-    datl = i;
-    dat = realloc(dat, i);
+  if((datl < i) || (dat == NULL)) {
+    // Reduce the number of allocations by always increasing the size
+    // at least by some factor. This way, we get at most O(log(datl)) allocations.
+    datl = datl * 3 / 2;
+    if(datl < i)
+      datl = i;
+    // Using free+malloc skips copying data when we don't need them.
+    free(dat);
+    dat = malloc(datl);
   }
   list = malloc(c*sizeof(struct dir *));
 

@@ -121,7 +121,7 @@ int has_cachedir_tag(const char *name) {
   if((l > path_l) || (path == NULL)) {
     // We always at least double the size to prevent too frequent
     // re-allocation.
-    path_l = path_l * 2;
+    path_l *= 2;
     if(path_l < l)
       path_l = l;
     // We don't need to copy the content of `path`, so it's more efficient

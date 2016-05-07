@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -32,9 +32,8 @@
 
 #include <unistd.h>
 #include <sys/time.h>
-#include <locale.h>
 
-#include "yopt.h"
+#include <yopt.h>
 
 
 int pstate;
@@ -53,7 +52,9 @@ static void screen_draw() {
     case ST_CALC:   dir_draw();    break;
     case ST_BROWSE: browse_draw(); break;
     case ST_HELP:   help_draw();   break;
+    case ST_SHELL:  shell_draw();  break;
     case ST_DEL:    delete_draw(); break;
+    case ST_QUIT:   quit_draw();   break;
   }
 }
 
@@ -97,6 +98,7 @@ int input_handle(int wait) {
       case ST_BROWSE: return browse_key(ch);
       case ST_HELP:   return help_key(ch);
       case ST_DEL:    return delete_key(ch);
+      case ST_QUIT:   return quit_key(ch);
     }
     screen_draw();
   }
@@ -127,10 +129,13 @@ static void argv_parse(int argc, char **argv) {
     {  1,  1, "--exclude" },
     { 'X', 1, "-X,--exclude-from" },
     { 'C', 0, "--exclude-caches" },
+    { 's', 0, "--si" },
+    { 'Q', 0, "--confirm-quit" },
     {0,0,NULL}
   };
 
   dir_ui = -1;
+  si = 0;
 
   yopt_init(&yopt, argc, argv, opts);
   while((v = yopt_next(&yopt, &val)) != -1) {
@@ -146,9 +151,11 @@ static void argv_parse(int argc, char **argv) {
       printf("  -o FILE                    Export scanned directory to FILE\n");
       printf("  -f FILE                    Import scanned directory from FILE\n");
       printf("  -0,-1,-2                   UI to use when scanning (0=none,2=full ncurses)\n");
+      printf("  --si                       Use base 10 (SI) prefixes instead of base 2\n");
       printf("  --exclude PATTERN          Exclude files that match PATTERN\n");
       printf("  -X, --exclude-from FILE    Exclude files that match any pattern in FILE\n");
       printf("  --exclude-caches           Exclude directories containing CACHEDIR.TAG\n");
+      printf("  --confirm-quit             Confirm quitting ncdu\n");
       exit(0);
     case 'q': update_delay = 2000; break;
     case 'v':
@@ -156,15 +163,17 @@ static void argv_parse(int argc, char **argv) {
       exit(0);
     case 'x': dir_scan_smfs = 1; break;
     case 'r': read_only = 1; break;
+    case 's': si = 1; break;
     case 'o': export = val; break;
     case 'f': import = val; break;
     case '0': dir_ui = 0; break;
     case '1': dir_ui = 1; break;
     case '2': dir_ui = 2; break;
+    case 'Q': confirm_quit = 1; break;
     case  1 : exclude_add(val); break; /* --exclude */
     case 'X':
       if(exclude_addfile(val)) {
-        printf("Can't open %s: %s\n", val, strerror(errno));
+        fprintf(stderr, "Can't open %s: %s\n", val, strerror(errno));
         exit(1);
       }
       break;
@@ -172,14 +181,14 @@ static void argv_parse(int argc, char **argv) {
       cachedir_tags = 1;
       break;
     case -2:
-      printf("ncdu: %s.\n", val);
+      fprintf(stderr, "ncdu: %s.\n", val);
       exit(1);
     }
   }
 
   if(export) {
     if(dir_export_init(export)) {
-      printf("Can't open %s: %s\n", export, strerror(errno));
+      fprintf(stderr, "Can't open %s: %s\n", export, strerror(errno));
       exit(1);
     }
     if(strcmp(export, "-") == 0)
@@ -189,7 +198,7 @@ static void argv_parse(int argc, char **argv) {
 
   if(import) {
     if(dir_import_init(import)) {
-      printf("Can't open %s: %s\n", import, strerror(errno));
+      fprintf(stderr, "Can't open %s: %s\n", import, strerror(errno));
       exit(1);
     }
     if(strcmp(import, "-") == 0)
@@ -251,7 +260,6 @@ static void init_nc() {
 
 /* main program */
 int main(int argc, char **argv) {
-  setlocale(LC_ALL, "");
   read_locale();
   argv_parse(argc, argv);
 

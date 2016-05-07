@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -266,12 +266,6 @@ static int process() {
   if(!dir_fatalerr && !(dir = dir_read(&fail)))
     dir_seterr("Error reading directory: %s", strerror(errno));
 
-  /* Special case: empty directory = error */
-  if(!dir_fatalerr && !*dir) {
-    dir_seterr("Directory empty");
-    free(dir);
-  }
-
   if(!dir_fatalerr) {
     curdev = (uint64_t)fs.st_dev;
     d = dir_createstruct(dir_curpath);
@@ -297,10 +291,13 @@ static int process() {
 }
 
 
+extern int confirm_quit_while_scanning_stage_1_passed;
+
 void dir_scan_init(const char *path) {
   dir_curpath_set(path);
   dir_setlasterr(NULL);
   dir_seterr(NULL);
   dir_process = process;
   pstate = ST_CALC;
+  confirm_quit_while_scanning_stage_1_passed = 0;
 }

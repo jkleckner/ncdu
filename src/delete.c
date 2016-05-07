@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ static void delete_draw_confirm() {
 
   ncprint(1, 2, "Are you sure you want to delete \"%s\"%c",
     cropstr(root->name, 21), root->flags & FF_DIR ? ' ' : '?');
-  if(root->flags & FF_DIR)
+  if(root->flags & FF_DIR && root->sub != NULL)
     ncprint(2, 18, "and all of its contents?");
 
   if(seloption == 0)
@@ -209,11 +209,13 @@ delete_nxt:
 
 
 void delete_process() {
+  struct dir *par;
+
   /* confirm */
   seloption = 1;
   while(state == DS_CONFIRM && !noconfirm)
     if(input_handle(0)) {
-      browse_init(root);
+      browse_init(root->parent);
       return;
     }
 
@@ -229,13 +231,13 @@ void delete_process() {
   /* delete */
   seloption = 0;
   state = DS_PROGRESS;
-  if(delete_dir(root))
-    browse_init(root);
-  else {
+  par = root->parent;
+  delete_dir(root);
+  if(nextsel)
     nextsel->flags |= FF_BSEL;
-    browse_init(nextsel);
+  browse_init(par);
+  if(nextsel)
     dirlist_top(-4);
-  }
 }
 
 

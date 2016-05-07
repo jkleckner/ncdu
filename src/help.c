@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -32,7 +32,7 @@
 int page, start;
 
 
-#define KEYS 16
+#define KEYS 17
 char *keys[KEYS*2] = {
 /*|----key----|  |----------------description----------------|*/
         "up, k", "Move cursor up",
@@ -50,6 +50,7 @@ char *keys[KEYS*2] = {
             "e", "Show/hide hidden or excluded files",
             "i", "Show information about selected item",
             "r", "Recalculate the current directory",
+            "b", "Spawn shell in current directory",
             "q", "Quit ncdu"
 };
 
@@ -60,7 +61,7 @@ void help_draw() {
   browse_draw();
 
   nccreate(15, 60, "ncdu help");
-  ncaddstr(13, 38, "Press q to continue");
+  ncaddstr(13, 42, "Press q to close");
 
   if(page == 1)
     attron(A_REVERSE);

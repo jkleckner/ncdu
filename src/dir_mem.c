@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -24,10 +24,11 @@
 */
 
 #include "global.h"
-#include "khash.h"
 
 #include <string.h>
 #include <stdlib.h>
+
+#include <khash.h>
 
 
 static struct dir *root;   /* root directory struct we're scanning */
@@ -197,7 +198,7 @@ static int final(int fail) {
     freedir(orig);
   }
 
-  browse_init(root->sub);
+  browse_init(root);
   dirlist_top(-3);
   return 0;
 }

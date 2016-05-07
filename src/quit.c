@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2014 Yoran Heling
+  Copyright (c) 2015 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -23,13 +23,28 @@
 
 */
 
-#ifndef _exclude_h
-#define _exclude_h
+#include "global.h"
 
-void exclude_add(char *);
-int  exclude_addfile(char *);
-int  exclude_match(char *);
-void exclude_clear();
-int  has_cachedir_tag(const char *name);
+#include <ncurses.h>
 
-#endif
+int quit_key(int ch) {
+  switch(ch) {
+  case 'y':
+  case 'Y':
+    return 1;
+  default:
+    pstate = ST_BROWSE;
+  }
+  return 0;
+}
+
+void quit_draw() {
+  browse_draw();
+
+  nccreate(4,30, "ncdu confirm quit");
+  ncaddstr(2,2, "Really quit? (y/N)");
+}
+
+void quit_init() {
+  pstate = ST_QUIT;
+}

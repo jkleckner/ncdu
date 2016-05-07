@@ -1,5 +1,5 @@
 
-AC_INIT(ncdu, 1.9g, projects@yorhel.nl)
+AC_INIT(ncdu, 1.11g, projects@yorhel.nl)
 AC_CONFIG_SRCDIR([src/global.h])
 AC_CONFIG_HEADER([config.h])
 AM_INIT_AUTOMAKE([foreign subdir-objects])
@@ -12,8 +12,10 @@ PKG_PROG_PKG_CONFIG
 
 # Check for header files.
 AC_CHECK_HEADERS(
-  [limits.h sys/time.h sys/types.h sys/stat.h dirent.h unistd.h fnmatch.h ncurses.h locale.h],[],
+  [limits.h sys/time.h sys/types.h sys/stat.h dirent.h unistd.h fnmatch.h ncurses.h],[],
   AC_MSG_ERROR([required header file not found]))
+
+AC_CHECK_HEADERS(locale.h)
 
 # Check for typedefs, structures, and compiler characteristics.
 AC_TYPE_INT64_T
@@ -23,7 +25,7 @@ AC_STRUCT_ST_BLOCKS
 
 # Check for library functions.
 AC_CHECK_FUNCS(
-  [getcwd gettimeofday fnmatch chdir rmdir unlink lstat setlocale],[],
+  [getcwd gettimeofday fnmatch chdir rmdir unlink lstat system getenv],[],
   AC_MSG_ERROR([required function missing]))
 
 
@@ -53,7 +55,14 @@ if test "$ncurses" = "ncurses"; then
     ])
 fi
 
+# Configure default shell for spawning shell when $SHELL is not set
+AC_ARG_WITH([shell],
+  [AS_HELP_STRING([--with-shell],
+                  [used interpreter as default shell (default is /bin/sh)])],
+                  [DEFAULT_SHELL=$withval],
+                  [DEFAULT_SHELL=/bin/sh])
+AC_MSG_NOTICE([Using $DEFAULT_SHELL as the default shell if \$SHELL is not set])
+AC_DEFINE_UNQUOTED(DEFAULT_SHELL, "$DEFAULT_SHELL", [Used default shell interpreter])
 
 
 AC_OUTPUT([Makefile])
-

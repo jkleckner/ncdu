@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -55,6 +55,8 @@
 #define ST_BROWSE 1
 #define ST_DEL    2
 #define ST_HELP   3
+#define ST_SHELL  4
+#define ST_QUIT   5
 
 
 /* structure representing a file or directory */
@@ -88,6 +90,8 @@ extern int read_only;
 extern long update_delay;
 /* filter directories with CACHEDIR.TAG */
 extern int cachedir_tags;
+/* flag if we should ask for confirmation when quitting */
+extern int confirm_quit;
 
 /* handle input from keyboard and update display */
 int input_handle(int);
@@ -102,5 +106,7 @@ int input_handle(int);
 #include "help.h"
 #include "path.h"
 #include "util.h"
+#include "shell.h"
+#include "quit.h"
 
 #endif

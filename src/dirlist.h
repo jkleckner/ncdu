@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -67,6 +67,9 @@ void dirlist_set_hidden(int hidden);
 
 /* The 'reference to parent dir' */
 extern struct dir *dirlist_parent;
+
+/* The actual parent dir */
+extern struct dir *dirlist_par;
 
 /* current sorting configuration (set with dirlist_set_sort()) */
 extern int dirlist_sort_desc, dirlist_sort_col, dirlist_sort_df;

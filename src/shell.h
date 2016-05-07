@@ -1,6 +1,7 @@
 /* ncdu - NCurses Disk Usage
 
   Copyright (c) 2007-2014 Yoran Heling
+  Shell support: Copyright (c) 2014 Thomas Jarosch
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -23,13 +24,12 @@
 
 */
 
-#ifndef _exclude_h
-#define _exclude_h
+#ifndef _shell_h
+#define _shell_h
 
-void exclude_add(char *);
-int  exclude_addfile(char *);
-int  exclude_match(char *);
-void exclude_clear();
-int  has_cachedir_tag(const char *name);
+#include "global.h"
+
+void shell_draw(void);
+void shell_init();
 
 #endif

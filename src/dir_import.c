@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -547,8 +547,6 @@ static int item(uint64_t dev) {
 
   if(!isroot)
     dir_curpath_leave();
-  else /* The root item must not be empty. */
-    E(ctx->items <= 1, "Empty directory");
 
   return 0;
 }

@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -90,7 +90,7 @@ static void browse_draw_info(struct dir *dr) {
 static void browse_draw_item(struct dir *n, int row) {
   char ct, dt, *size, gr[11], *items;
   int i, o, x;
-  float pc;
+  float pc = 0.0f;
 
   if(n->flags & FF_BSEL)
     attron(A_REVERSE);
@@ -98,13 +98,12 @@ static void browse_draw_item(struct dir *n, int row) {
   /* reference to parent dir has a different format */
   if(n == dirlist_parent) {
     mvhline(row, 0, ' ', wincols);
-    o = graph == 0 ? 12 :
-        graph == 1 ? 24 :
-        graph == 2 ? 20 :
-                     31 ;
-    if (show_items) {
+    o = graph == 0 ? 13 :
+        graph == 1 ? 25 :
+        graph == 2 ? 21 :
+                     32 ;
+    if(show_items)
       o += 7;
-    }
     mvaddstr(row, o, "/..");
     if(n->flags & FF_BSEL)
       attroff(A_REVERSE);
@@ -142,8 +141,8 @@ static void browse_draw_item(struct dir *n, int row) {
 
   x = 0;
 
-  mvprintw(row, x, "%c %8s ", ct, size);
-  x += 11;
+  mvprintw(row, x, "%c %9s ", ct, size);
+  x += 12;
 
   if (show_items) {
     if (n->items > 99999)
@@ -169,7 +168,7 @@ static void browse_draw_item(struct dir *n, int row) {
 
 void browse_draw() {
   struct dir *t;
-  char fmtsize[9], *tmp;
+  char fmtsize[10], *tmp;
   int selected = 0, i;
 
   erase();
@@ -188,9 +187,9 @@ void browse_draw() {
 
   /* second line - the path */
   mvhline(1, 0, '-', wincols);
-  if(t) {
+  if(dirlist_par) {
     mvaddch(1, 3, ' ');
-    tmp = getpath(t->parent);
+    tmp = getpath(dirlist_par);
     mvaddstr(1, 4, cropstr(tmp, wincols-8));
     mvaddch(1, 4+((int)strlen(tmp) > wincols-8 ? wincols-8 : (int)strlen(tmp)), ' ');
   }
@@ -350,7 +349,7 @@ int browse_key(int ch) {
       info_show = 0;
       break;
     case 't':
-      dirlist_set_sort(DL_NOCHANGE, DL_NOCHANGE, dirlist_sort_df);
+      dirlist_set_sort(DL_NOCHANGE, DL_NOCHANGE, !dirlist_sort_df);
       info_show = 0;
       break;
     case 'a':
@@ -364,17 +363,18 @@ int browse_key(int ch) {
     case 10:
     case KEY_RIGHT:
     case 'l':
-      if(sel != NULL && sel->sub != NULL) {
-        dirlist_open(sel->sub);
+      if(sel != NULL && sel->flags & FF_DIR) {
+        dirlist_open(sel == dirlist_parent ? dirlist_par->parent : sel);
         dirlist_top(-3);
       }
       info_show = 0;
       break;
     case KEY_LEFT:
+    case KEY_BACKSPACE:
     case 'h':
     case '<':
-      if(sel != NULL && sel->parent->parent != NULL) {
-        dirlist_open(sel->parent);
+      if(dirlist_par && dirlist_par->parent != NULL) {
+        dirlist_open(dirlist_par->parent);
         dirlist_top(-3);
       }
       info_show = 0;
@@ -386,10 +386,10 @@ int browse_key(int ch) {
         message = "Directory imported from file, won't refresh.";
         break;
       }
-      if(sel != NULL) {
+      if(dirlist_par) {
         dir_ui = 2;
-        dir_mem_init(sel->parent);
-        dir_scan_init(getpath(sel->parent));
+        dir_mem_init(dirlist_par);
+        dir_scan_init(getpath(dirlist_par));
       }
       info_show = 0;
       break;
@@ -397,7 +397,9 @@ int browse_key(int ch) {
       if(info_show)
         info_show = 0;
       else
-        return 1;
+        if (confirm_quit)
+          quit_init();
+        else return 1;
       break;
     case 'g':
       if(++graph > 3)
@@ -426,8 +428,15 @@ int browse_key(int ch) {
       info_show = 0;
       if((t = dirlist_get(1)) == sel)
         if((t = dirlist_get(-1)) == sel || t == dirlist_parent)
-          t = sel->parent;
+          t = NULL;
       delete_init(sel, t);
+      break;
+     case 'b':
+      if(dir_import_active) {
+        message = "Shell feature not available for imported directories.";
+        break;
+      }
+      shell_init();
       break;
     }
 
@@ -442,9 +451,9 @@ int browse_key(int ch) {
 }
 
 
-void browse_init(struct dir *cur) {
+void browse_init(struct dir *par) {
   pstate = ST_BROWSE;
   message = NULL;
-  dirlist_open(cur);
+  dirlist_open(par);
 }
 

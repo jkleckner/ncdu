@@ -97,6 +97,17 @@ option has no effect when C<-o> is used, because there will not be a browser
 interface in that case. It has no effect when C<-f> is used, either, because
 the deletion feature is disabled in that case anyway.
 
+=item --si
+
+List sizes using base 10 prefixes, that is, powers of 1000 (KB, MB, etc), as
+defined in the International System of Units (SI), instead of the usual base 2
+prefixes, that is, powers of 1024 (KiB, MiB, etc).
+
+=item --confirm-quit
+
+Requires a confirmation before quitting ncdu. Very helpful when you
+accidentally press 'q' during or after a very long scan.
+
 =back
 
 =head2 Scan Options
@@ -203,6 +214,20 @@ Show information about the current selected item.
 =item r
 
 Refresh/recalculate the current directory.
+
+=item b
+
+Spawn shell in current directory.
+
+We first check the $NCDU_SHELL environment variable of the user for the
+preferred shell interpreter. If it's not set, $SHELL is checked. If that
+variable also isn't defined, we fall back to the compile time configured
+default shell (usually /bin/sh). This allows you to specify which program to
+launch when 'b' is pressed. For example, if you want ncdu to execute the
+Midnight Commander file manager in the current directory:
+
+  export NCDU_SHELL=mc
+  ncdu
 
 =item q
 

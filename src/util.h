@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2012 Yoran Heling
+  Copyright (c) 2007-2014 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -34,6 +34,9 @@ extern int winrows, wincols;
 
 /* used by the nc* functions and macros */
 extern int subwinr, subwinc;
+
+/* used by formatsize to choose between base 2 or 10 prefixes */
+extern int si;
 
 
 /* Instead of using several ncurses windows, we only draw to stdscr.

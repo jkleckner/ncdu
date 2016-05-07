@@ -1,6 +1,6 @@
 /* ncdu - NCurses Disk Usage
 
-  Copyright (c) 2007-2014 Yoran Heling
+  Copyright (c) 2015 Yoran Heling
 
   Permission is hereby granted, free of charge, to any person obtaining
   a copy of this software and associated documentation files (the
@@ -23,13 +23,15 @@
 
 */
 
-#ifndef _exclude_h
-#define _exclude_h
+#ifndef _quit_h
+#define _quit_h
 
-void exclude_add(char *);
-int  exclude_addfile(char *);
-int  exclude_match(char *);
-void exclude_clear();
-int  has_cachedir_tag(const char *name);
+#include "global.h"
+
+int  quit_key(int);
+void quit_draw(void);
+void quit_init(void);
+
 
 #endif
+

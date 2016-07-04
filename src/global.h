@@ -63,6 +63,7 @@
 struct dir {
   int64_t size, asize;
   uint64_t ino, dev;
+  uint64_t mtime;
   struct dir *parent, *next, *prev, *sub, *hlnk;
   int items;
   unsigned char flags;

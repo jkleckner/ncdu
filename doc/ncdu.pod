@@ -175,6 +175,10 @@ Order by filesize (press again for descending order)
 
 Order by number of items (press again for descending order)
 
+=item m
+
+Order by file modfied time (press again for descending order)
+
 =item a
 
 Toggle between showing disk usage and showing apparent size.

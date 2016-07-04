@@ -95,6 +95,8 @@ static void output_info(struct dir *d) {
   }
   fputs(",\"ino\":", stream);
   output_int(d->ino);
+  fputs(",\"mtime\":", stream);
+  output_int(d->mtime);
 
   /* TODO: Including the actual number of links would be nicer. */
   if(d->flags & FF_HLNKC)

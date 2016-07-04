@@ -68,6 +68,7 @@ static void browse_draw_info(struct dir *dr) {
         : dr->flags & FF_FILE ? "File" : "Other (link, device, socket, ..)");
     ncprint(6, 18, "%s (%s B)", formatsize(dr->size),  fullsize(dr->size));
     ncprint(7, 18, "%s (%s B)", formatsize(dr->asize), fullsize(dr->asize));
+    /* Todo: format mtime */
     break;
 
   case 1:
@@ -331,6 +332,10 @@ int browse_key(int ch) {
       break;
 
     /* sorting items */
+    case 'm':
+      dirlist_set_sort(DL_COL_MTIME, dirlist_sort_col == DL_COL_MTIME ? !dirlist_sort_desc : 0, DL_NOCHANGE);
+      info_show = 0;
+      break;
     case 'n':
       dirlist_set_sort(DL_COL_NAME, dirlist_sort_col == DL_COL_NAME ? !dirlist_sort_desc : 0, DL_NOCHANGE);
       info_show = 0;

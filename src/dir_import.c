@@ -464,6 +464,9 @@ static int iteminfo(struct dir **item, uint64_t dev, int isdir) {
     } else if(strcmp(ctx->val, "ino") == 0) {        /* ino */
       C(rint64(&iv, UINT64_MAX));
       d->ino = iv;
+    } else if(strcmp(ctx->val, "mtime") == 0) {      /* mtime */
+      C(rint64(&iv, UINT64_MAX));
+      d->mtime = iv;
     } else if(strcmp(ctx->val, "hlnkc") == 0) {      /* hlnkc */
       if(*ctx->buf == 't') {
         C(rlit("true", 4));

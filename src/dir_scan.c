@@ -51,6 +51,7 @@ static uint64_t curdev;   /* current device we're scanning on */
 static void stat_to_dir(struct dir *d, struct stat *fs) {
   d->ino = (uint64_t)fs->st_ino;
   d->dev = (uint64_t)fs->st_dev;
+  d->mtime = (uint64_t)fs->st_mtime;
 
   if(S_ISREG(fs->st_mode))
     d->flags |= FF_FILE;

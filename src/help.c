@@ -32,7 +32,7 @@
 int page, start;
 
 
-#define KEYS 17
+#define KEYS 18
 char *keys[KEYS*2] = {
 /*|----key----|  |----------------description----------------|*/
         "up, k", "Move cursor up",
@@ -42,6 +42,7 @@ char *keys[KEYS*2] = {
             "n", "Sort by name (ascending/descending)",
             "s", "Sort by size (ascending/descending)",
             "C", "Sort by items (ascending/descending)",
+            "m", "Sort by mtime (ascending/descending)",
             "d", "Delete selected file or directory",
             "t", "Toggle dirs before files when sorting",
             "g", "Show percentage and/or graph",

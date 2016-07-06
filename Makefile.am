@@ -45,3 +45,16 @@ ncdu.1: $(srcdir)/doc/ncdu.pod
 update-deps:
 	wget -q https://raw.github.com/attractivechaos/klib/master/khash.h -O "$(srcdir)/deps/khash.h"
 	wget -q http://g.blicky.net/ylib.git/plain/yopt.h -O "$(srcdir)/deps/yopt.h"
+
+create_binaries:
+	autoreconf -i
+	./configure --prefix=/usr/local
+	make clean
+	make
+	mkdir -p binaries/Mac10.11
+	cp ncdu binaries/Mac10.11/ncdu
+	docker build  --tag=ncdu:build .
+	docker run --rm --name ncdu --interactive --tty --volume `pwd`:/mnt ncdu:build bash -c '(cd /mnt ; autoconf -i ; ./configure; make clean ; make ; mkdir -p binaries/ubuntu-16.04 ; cp ncdu binaries/ubuntu-16.04/ncdu )'
+	autoreconf -i
+	./configure --prefix=/usr/local
+	make clean
